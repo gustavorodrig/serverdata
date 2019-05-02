@@ -45,7 +45,6 @@ public class ServerService {
 
         if(existingServer.isPresent()){
             serverRepository.delete(existingServer.get());
-
             return  String.format("Server %d deleted", id);
         }
         return String.format("Server %d not found", id);

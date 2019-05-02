@@ -6,9 +6,10 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.shell.jline.JLineShellAutoConfiguration;
+import org.springframework.shell.standard.commands.StandardCommandsAutoConfiguration;
 
 @SpringBootApplication
-@EnableAutoConfiguration(exclude = {JLineShellAutoConfiguration.class})
+@EnableAutoConfiguration(exclude = {JLineShellAutoConfiguration.class, StandardCommandsAutoConfiguration.class})
 public class ServerDataApplicationTests {
     public static void main(String[] args) {
         SpringApplication.run(ServerDataApplicationTests.class, args);
