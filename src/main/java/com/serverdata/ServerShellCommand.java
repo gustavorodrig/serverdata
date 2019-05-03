@@ -1,5 +1,6 @@
-package com.serverdata.service;
+package com.serverdata;
 
+import com.serverdata.service.ServerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -40,4 +41,5 @@ public class ServerShellCommand {
     public String list() {
         return "List Servers " + serverService.listServices();
     }
+
 }

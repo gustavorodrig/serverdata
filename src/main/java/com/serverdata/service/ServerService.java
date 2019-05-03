@@ -12,8 +12,15 @@ import java.util.stream.Collectors;
 @Service
 public class ServerService {
 
-    @Autowired
+    private String SERVER_NOT_FOUND = "Server %d not found";
+    private String SERVER_DELETED = "Server %d deleted";
+    private String NO_SERVER_FOUND = "No Server was found";
     private ServerRepository serverRepository;
+
+    @Autowired
+    public ServerService(ServerRepository serverRepository) {
+        this.serverRepository = serverRepository;
+    }
 
     public String addServer(String name, String description){
 
@@ -33,10 +40,9 @@ public class ServerService {
             server.setDescription(description);
             Server updatedServer = serverRepository.save(server);
             return updatedServer.toString();
-
         }
 
-        return String.format("Server %d not found", id);
+        return String.format(SERVER_NOT_FOUND, id);
     }
 
     public String deleteServer(Long id){
@@ -45,9 +51,9 @@ public class ServerService {
 
         if(existingServer.isPresent()){
             serverRepository.delete(existingServer.get());
-            return  String.format("Server %d deleted", id);
+            return String.format(SERVER_DELETED, id);
         }
-        return String.format("Server %d not found", id);
+        return String.format(SERVER_NOT_FOUND, id);
     }
 
     public Long countServers(){
@@ -57,7 +63,13 @@ public class ServerService {
     }
 
     public String listServices(){
+
         List<Server> allServers = serverRepository.findAll();
+
+        if(allServers.isEmpty()){
+            return NO_SERVER_FOUND;
+        }
+
         return allServers.stream().map(s -> s.toString()).collect( Collectors.joining( "/" ));
     }
 }

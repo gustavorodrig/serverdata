@@ -1,4 +1,4 @@
-package com.serverdata;
+package com.serverdata.config;
 
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStyle;

@@ -1,109 +1,131 @@
 package com.serverdata.service;
 
-import com.serverdata.ServerDataApplication;
 import com.serverdata.model.Server;
 import com.serverdata.repository.ServerRepository;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.shell.jline.JLineShellAutoConfiguration;
-import org.springframework.shell.standard.commands.StandardCommandsAutoConfiguration;
+import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
+
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = ServerDataApplication.class)
-@EnableAutoConfiguration(exclude = {JLineShellAutoConfiguration.class, StandardCommandsAutoConfiguration.class})
 public class ServerServiceTest {
 
-    @Autowired
+    private ServerService serverService;
+
+    @Mock
     private ServerRepository serverRepository;
 
+    @Before
+    public void setUp(){
+        serverService = new ServerService(serverRepository);
+    }
+
     @Test
-    public void testAddNewServer() {
+    public void testAddServer() {
 
-        Server savedServer = serverRepository.save(createServer("AXY-21", "New One"));
+        Server server = createServer("AXY-21", "New One");
+        when(serverRepository.save(any())).thenReturn(server);
 
-        Assert.assertEquals(savedServer.getId(), 1);
-        Assert.assertEquals(savedServer.getName(), "AXY-21");
-        Assert.assertEquals(savedServer.getDescription(), "New One");
+        String serverData = serverService.addServer("AXY-21", "New One");
+
+        Assert.assertEquals(serverData, "Server{id=0, name='AXY-21', description='New One'}");
 
     }
 
     @Test
     public void testUpdateServer() {
 
-        Server savedServer = serverRepository.save(createServer("AXY-21", "New One"));
-        Assert.assertEquals(savedServer.getId(), 1);
-        Assert.assertEquals(savedServer.getName(), "AXY-21");
-        Assert.assertEquals(savedServer.getDescription(), "New One");
+        Server server = createServer("AXY-21", "New One");
+        when(serverRepository.findById(new Long(0))).thenReturn(Optional.of(server));
 
-        savedServer.setName("ABC-33");
-        Server updatedServer = serverRepository.save(savedServer);
-        Assert.assertEquals(updatedServer.getId(), 1);
-        Assert.assertSame("Server name was not updated", updatedServer.getName(), "ABC-33");
-        Assert.assertEquals(updatedServer.getDescription(), "New One");
+        Server serverUpdated = createServer("ZZZ-44", "Old One");
+        when(serverRepository.save(server)).thenReturn(serverUpdated);
+
+        String serverData = serverService.updateServer(new Long(0),"ZZZ-44", "Old One");
+
+        Assert.assertEquals(serverData, "Server{id=0, name='ZZZ-44', description='Old One'}");
+
+    }
+
+    @Test
+    public void testUpdateServerNotFound() {
+
+        when(serverRepository.findById(new Long(0))).thenReturn(Optional.empty());
+
+        String serverData = serverService.updateServer(new Long(0),"ZZZ-44", "Old One");
+
+        Assert.assertEquals(serverData, "Server 0 not found");
 
     }
 
     @Test
     public void testDeleteServer() {
 
-        Server savedServer = serverRepository.save(createServer("AXY-21", "New One"));
-        Assert.assertEquals(savedServer.getId(), 1);
-        Assert.assertEquals(savedServer.getName(), "AXY-21");
-        Assert.assertEquals(savedServer.getDescription(), "New One");
+        Server server = createServer("AXY-21", "New One");
+        when(serverRepository.findById(new Long(0))).thenReturn(Optional.of(server));
 
-        serverRepository.delete(savedServer);
+        String serverData = serverService.deleteServer(new Long(0));
 
-        Optional<Server> serverById = serverRepository.findById(new Long(1));
-        Assert.assertEquals("Server not deleted", serverById.isPresent(), Boolean.FALSE);
+        Assert.assertEquals(serverData, "Server 0 deleted");
+    }
 
+    @Test
+    public void testDeleteServerNotFound() {
+
+        when(serverRepository.findById(new Long(0))).thenReturn(Optional.empty());
+
+        String serverData = serverService.deleteServer(new Long(0));
+
+        Assert.assertEquals(serverData, "Server 0 not found");
     }
 
     @Test
     public void testCountServers() {
 
-        createServers().forEach(s-> serverRepository.save(s));
-        long count = serverRepository.findAll().stream().count();
-        Assert.assertEquals(count, 4);
+        when(serverRepository.findAll()).thenReturn(createServers());
+
+        Long count = serverService.countServers();
+
+        Assert.assertEquals(count, new Long(4));
 
     }
 
     @Test
-    public void listServices() {
-        createServers().forEach(s-> serverRepository.save(s));
-        List<Server> allServers = serverRepository.findAll();
+    public void testListOfServices() {
 
-        Assert.assertEquals(allServers.get(0).getId(), 1);
-        Assert.assertEquals(allServers.get(0).getName(), "AXY-21");
-        Assert.assertEquals(allServers.get(0).getDescription(), "New One");
+        when(serverRepository.findAll()).thenReturn(createServers());
 
-        Assert.assertEquals(allServers.get(1).getId(), 1);
-        Assert.assertEquals(allServers.get(1).getName(), "ABC-44");
-        Assert.assertEquals(allServers.get(1).getDescription(), "Tech");
+        String allServers = serverService.listServices();
 
-        Assert.assertEquals(allServers.get(2).getId(), 1);
-        Assert.assertEquals(allServers.get(2).getName(), "AZY-89");
-        Assert.assertEquals(allServers.get(2).getDescription(), "ShutDown");
-
-        Assert.assertEquals(allServers.get(3).getId(), 1);
-        Assert.assertEquals(allServers.get(3).getName(), "AHU-33");
-        Assert.assertEquals(allServers.get(3).getDescription(), "Exec");
+        Assert.assertEquals(allServers, "Server{id=0, name='AXY-21', description='New One'}/Server{id=0, name='ABC-44', description='Tech'}/Server{id=0, name='AZY-89', description='ShutDown'}/Server{id=0, name='AHU-33', description='Exec'}");
 
     }
 
-    private Server createServer(String name, String description){
+    @Test
+    public void testListOfServiceNotFound() {
+
+        when(serverRepository.findAll()).thenReturn(new ArrayList<>());
+
+        String allServers = serverService.listServices();
+
+        Assert.assertEquals(allServers, "No Server was found");
+
+    }
+
+    private Server createServer(String name, String description) {
         return new Server(name, description);
     }
 
-    private List<Server> createServers(){
+    private List<Server> createServers() {
 
         List<Server> servers = new ArrayList<>();
 
