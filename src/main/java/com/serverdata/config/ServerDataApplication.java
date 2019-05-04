@@ -21,11 +21,11 @@ public class ServerDataApplication {
 		run(ServerDataApplication.class, args);
 	}
 
-	@Bean
-	public PromptProvider promptProvider() {
-		return () -> new AttributedString("server command:>",
-				AttributedStyle.DEFAULT.foreground(AttributedStyle.RED));
-	}
+    @Bean
+    public PromptProvider promptProvider() {
+        return () -> new AttributedString("server command:>",
+                AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW));
+    }
 }
 
 

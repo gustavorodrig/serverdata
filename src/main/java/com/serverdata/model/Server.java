@@ -3,10 +3,12 @@ package com.serverdata.model;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
 
 @Entity
 @Table(name="server_data")
+@XmlRootElement(name = "server")
 public class Server {
 
     public Server() {
