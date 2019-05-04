@@ -91,7 +91,7 @@ public class ServerServiceTest {
     @Test
     public void testCountServers() {
 
-        when(serverRepository.findAll()).thenReturn(createServers());
+        when(serverRepository.findAll()).thenReturn(createListOfServers());
 
         Long count = serverService.countServers();
 
@@ -102,11 +102,14 @@ public class ServerServiceTest {
     @Test
     public void testListOfServices() {
 
-        when(serverRepository.findAll()).thenReturn(createServers());
+        when(serverRepository.findAll()).thenReturn(createListOfServers());
 
         String allServers = serverService.listServices();
 
-        Assert.assertEquals(allServers, "Server{id=0, name='AXY-21', description='New One'}/Server{id=0, name='ABC-44', description='Tech'}/Server{id=0, name='AZY-89', description='ShutDown'}/Server{id=0, name='AHU-33', description='Exec'}");
+        Assert.assertEquals(allServers, "Server{id=0, name='AXY-222', description='New One'}" + System.lineSeparator() +
+                "Server{id=0, name='ABC-444', description='Tech'}" + System.lineSeparator() +
+                "Server{id=0, name='AZY-899', description='ShutDown'}" + System.lineSeparator() +
+                "Server{id=0, name='AHU-333', description='Exec'}");
 
     }
 
@@ -125,14 +128,14 @@ public class ServerServiceTest {
         return new Server(name, description);
     }
 
-    private List<Server> createServers() {
+    private List<Server> createListOfServers() {
 
         List<Server> servers = new ArrayList<>();
 
-        servers.add(new Server("AXY-21", "New One"));
-        servers.add(new Server("ABC-44", "Tech"));
-        servers.add(new Server("AZY-89", "ShutDown"));
-        servers.add(new Server("AHU-33", "Exec"));
+        servers.add(new Server("AXY-222", "New One"));
+        servers.add(new Server("ABC-444", "Tech"));
+        servers.add(new Server("AZY-899", "ShutDown"));
+        servers.add(new Server("AHU-333", "Exec"));
 
         return servers;
     }
