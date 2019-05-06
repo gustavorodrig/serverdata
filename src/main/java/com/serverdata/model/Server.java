@@ -8,7 +8,6 @@ import java.util.Objects;
 
 @Entity
 @Table(name="server_data")
-@XmlRootElement(name = "server")
 public class Server {
 
     public Server() {

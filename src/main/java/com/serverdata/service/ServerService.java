@@ -1,6 +1,7 @@
 package com.serverdata.service;
 
 import com.serverdata.model.Server;
+import com.serverdata.model.to.ServerTO;
 import com.serverdata.repository.ServerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -88,9 +89,11 @@ public class ServerService {
         try {
 
             File file = ResourceUtils.getFile(absolutePath);
-            JAXBContext jaxbContext = JAXBContext.newInstance(Server.class);
+            JAXBContext jaxbContext = JAXBContext.newInstance(ServerTO.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            server = (Server) unmarshaller.unmarshal(file);
+            ServerTO serverTO = (ServerTO) unmarshaller.unmarshal(file);
+
+            server = new Server(serverTO.getName(), serverTO.getDescription());
 
         } catch (FileNotFoundException e) {
             return XML_FILE_NOT_FOUND;

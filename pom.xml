@@ -76,6 +76,7 @@
                 <version>2.6</version>
                 <configuration>
                     <outputName>server-data-test-report</outputName>
+                    <outputDirectory>report</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>

@@ -21,6 +21,9 @@ public class ServerDataApplication {
 		run(ServerDataApplication.class, args);
 	}
 
+    /**
+     * Register Shell command and its attributes
+     */
     @Bean
     public PromptProvider promptProvider() {
         return () -> new AttributedString("server command:>",
